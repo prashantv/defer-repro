@@ -21,14 +21,14 @@ func returnsErr() error {
 	return errors.New("[err string]")
 }
 
-func instrument(name string, err *error) func() {
+func instrument(err *error) func() {
 	return func() {
 		fmt.Fprintln(ioutil.Discard, "Error", (*err).Error())
 	}
 }
 
 func methodWithError() (retErr error) {
-	defer instrument("name", &retErr)()
+	defer instrument(&retErr)()
 	if err := returnsErr(); err != nil {
 		return err
 	}
