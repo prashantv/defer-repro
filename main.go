@@ -23,15 +23,17 @@ func returnsErr() error {
 
 func instrument(name string, tags map[string]string, err *error) func() {
 	return func() {
-		fmt.Fprintln(ioutil.Discard, "error")
-		tags["result"] = "notOK"
 		fmt.Fprintln(ioutil.Discard, "Error", (*err).Error())
 	}
 }
 
-func methodWithError() (err error) {
-	defer instrument("name", map[string]string{"1": "1"}, &err)()
-	return returnsErr()
+func methodWithError() (retErr error) {
+	defer instrument("name", map[string]string{"1": "1"}, &retErr)()
+	if err := returnsErr(); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func handleRequest() {
